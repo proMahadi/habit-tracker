@@ -34,7 +34,7 @@ const AddHabitForm: React.FC = () => {
     }
   };
   return (
-    <form className="max-w-[500px] mx-auto" onSubmit={handleSubmit}>
+    <form className="sm:max-w-[500px] md:max-w-[800px] mx-auto" onSubmit={handleSubmit}>
       <Input
         value={name}
         type="text"
