@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/Button";
 import { FaCheckCircle } from "react-icons/fa";
 import { TiDelete } from "react-icons/ti";
-import { toggleHabit } from "@/redux/app/habit/habitSlice";
+import { removeHabit, toggleHabit } from "@/redux/app/habit/habitSlice";
 
 const HabitList: React.FC = () => {
   const habits = useSelector((state: RootState) => state.habits.habits);
@@ -28,9 +28,9 @@ const HabitList: React.FC = () => {
             </div>
             <div className="flex gap-x-1">
               <Button
-              onClick={()=>
-                dispatch(toggleHabit({id:habit.id, date:today}))
-              }
+                onClick={() =>
+                  dispatch(toggleHabit({ id: habit.id, date: today }))
+                }
                 className={`bg-transparent hover:bg-transparent border ${
                   habit.completedDates.includes(today)
                     ? "text-green-500 border-green-500"
@@ -39,14 +39,15 @@ const HabitList: React.FC = () => {
               >
                 <FaCheckCircle />
                 <span>
-                {
-                  habit.completedDates.includes(today)
+                  {habit.completedDates.includes(today)
                     ? "Completed"
-                    : "Mark Completed"
-                }
+                    : "Mark Completed"}
                 </span>
               </Button>
               <Button
+                onClick={() =>
+                  dispatch(removeHabit({ id: habit.id}))
+                }
                 className={`bg-transparent hover:bg-transparent border text-red-500 border-red-500`}
               >
                 <TiDelete />

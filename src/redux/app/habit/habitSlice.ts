@@ -48,9 +48,16 @@ const habitSlice = createSlice({
                 habit.completedDates.push(action.payload.date)
             }
         }
+    },
+    removeHabit : (
+      state,
+      action: PayloadAction<{ id: string}>
+    )=>{
+      const index = state.habits.findIndex((h)=>h.id === action.payload.id);
+      state.habits.splice(index,1)
     }
   },
 });
 
-export const { addHabit,toggleHabit } = habitSlice.actions;
+export const { addHabit,toggleHabit,removeHabit } = habitSlice.actions;
 export default habitSlice.reducer;
