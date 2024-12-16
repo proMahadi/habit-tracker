@@ -45,7 +45,7 @@ const HabitList: React.FC = () => {
             className="py-2 px-6 w-full border shadow rounded-md "
             key={habit.id}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-4">
               <div>
                 <h3 className="text-2xl bold capitalize">{habit.name}</h3>
                 <p className="text-sm text-gray-400 capitalize">
