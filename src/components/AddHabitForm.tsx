@@ -12,7 +12,8 @@ import {
 import { Button } from "./ui/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { addHabit } from "@/redux/app/habit/habitSlice";
+import {  addHabitToSupabase } from "@/redux/app/habit/habitSlice";
+// import { addHabit} from "@/redux/app/habit/habitSlice";
 
 const AddHabitForm: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -24,10 +25,14 @@ const AddHabitForm: React.FC = () => {
     e.preventDefault();
     if (name.trim()) {
       dispatch(
-        addHabit({
+        addHabitToSupabase({
           name,
           frequency,
         })
+        // addHabit({
+        //   name,
+        //   frequency,
+        // })
       );
       setName("");
       setFrequency("daily");

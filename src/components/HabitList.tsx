@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/Button";
 import { FaCheckCircle } from "react-icons/fa";
 import { TiDelete } from "react-icons/ti";
-import { Habit, removeHabit, toggleHabit } from "@/redux/app/habit/habitSlice";
+import { fetchHabits, Habit,  removeHabitFromSupabase, toggleHabitCompletionInSupabase } from "@/redux/app/habit/habitSlice";
+// import { fetchHabits, Habit, removeHabit,  toggleHabit } from "@/redux/app/habit/habitSlice";
 import { Progress } from "./ui/Progress";
+import { useEffect } from "react";
 
 const HabitList: React.FC = () => {
   const habits = useSelector((state: RootState) => state.habits.habits);
@@ -30,6 +32,11 @@ const HabitList: React.FC = () => {
     return streak;
   };
 
+  useEffect(() => {
+    // Fetch habits from Supabase when the app loads
+    dispatch(fetchHabits());
+  }, [dispatch]);
+
   return (
     <div className="sm:max-w-[500px] md:max-w-[800px] mx-auto">
       <ul className="flex flex-col gap-y-6">
@@ -48,7 +55,7 @@ const HabitList: React.FC = () => {
               <div className="flex gap-x-1">
                 <Button
                   onClick={() =>
-                    dispatch(toggleHabit({ id: habit.id, date: today }))
+                    dispatch(toggleHabitCompletionInSupabase({ id: habit.id, date: today }))
                   }
                   className={`bg-transparent hover:bg-transparent border ${
                     habit.completedDates.includes(today)
@@ -64,7 +71,7 @@ const HabitList: React.FC = () => {
                   </span>
                 </Button>
                 <Button
-                  onClick={() => dispatch(removeHabit({ id: habit.id }))}
+                  onClick={() => dispatch(removeHabitFromSupabase(habit.id))}
                   className={`bg-transparent hover:bg-transparent border text-red-500 border-red-500`}
                 >
                   <TiDelete />
