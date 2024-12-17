@@ -49,18 +49,25 @@ Habit, // This is the return type when the action is fulfilled
         completedDates: [],
         createdAt: new Date().toISOString(),
       },
-    ]);
+    ])
+    .select("*");
 
     if (error) {
       return rejectWithValue(error.message);
     }
-
-    if (data !== null && data !== undefined) {
-      return data[0]; // Return the first element if data is not null
+    
+    if (data && data.length > 0) {
+      return data[0]; // Return the first inserted row
     } else {
-      // Handle the case where data is null or undefined
-      throw new Error('Data is null or undefined');
+      throw new Error("No data returned from Supabase");
     }
+
+    // if (data !== null && data !== undefined) {
+    //   return data[0]; // Return the first element if data is not null
+    // } else {
+    //   // Handle the case where data is null or undefined
+    //   throw new Error('Data is null or undefined');
+    // }
      // Return the newly created habit
   }
 );
