@@ -1,5 +1,5 @@
 import supabase from "@/supabaseClient";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Habit {
@@ -86,6 +86,44 @@ export const removeHabitFromSupabase = createAsyncThunk(
 );
 
 
+// export const toggleHabitCompletionInSupabase = createAsyncThunk(
+//   "habits/toggleHabit",
+//   async (toggleData: { id: string; date: string }, { rejectWithValue }) => {
+//     // Fetch the existing habit from Supabase
+//     const { data, error: fetchError } = await supabase
+//       .from("habits")
+//       .select("completedDates")
+//       .eq("id", toggleData.id)
+//       .single();
+
+//     if (fetchError) {
+//       return rejectWithValue(fetchError.message);
+//     }
+
+//     const completedDates: string[] = data.completedDates;
+//     const dateIndex = completedDates.indexOf(toggleData.date);
+
+//     // Toggle the date
+//     if (dateIndex > -1) {
+//       completedDates.splice(dateIndex, 1); // Remove date if it exists
+//     } else {
+//       completedDates.push(toggleData.date); // Add date if it doesn't exist
+//     }
+
+//     // Update the habit in Supabase
+//     const { error: updateError } = await supabase
+//       .from("habits")
+//       .update({ completedDates })
+//       .eq("id", toggleData.id);
+
+//     if (updateError) {
+//       return rejectWithValue(updateError.message);
+//     }
+
+//     return { id: toggleData.id, completedDates }; // Return updated data
+//   }
+// );
+
 export const toggleHabitCompletionInSupabase = createAsyncThunk(
   "habits/toggleHabit",
   async (toggleData: { id: string; date: string }, { rejectWithValue }) => {
@@ -110,6 +148,15 @@ export const toggleHabitCompletionInSupabase = createAsyncThunk(
       completedDates.push(toggleData.date); // Add date if it doesn't exist
     }
 
+    // Check if the habit streak is broken (i.e., if any days are missed)
+    completedDates.sort(); // Sort completedDates in ascending order
+    const now = new Date().toISOString().split("T")[0]; // Get today's date
+
+    // If the streak is broken, reset the streak count
+    if (!completedDates.includes(now)) {
+      completedDates.length = 0; // Reset completed dates if the habit was not completed today
+    }
+
     // Update the habit in Supabase
     const { error: updateError } = await supabase
       .from("habits")
@@ -127,10 +174,14 @@ export const toggleHabitCompletionInSupabase = createAsyncThunk(
 
 
 
+
 const habitSlice = createSlice({
   name: "habits",
   initialState,
   reducers: {
+    updateHabitStreaks: (state, action: PayloadAction<Habit[]>) => {
+      state.habits = action.payload;
+    },
     // addHabit: (
     //   state,
     //   action: PayloadAction<{ name: string; frequency: "daily" | "weekly" }>
@@ -221,4 +272,5 @@ const habitSlice = createSlice({
 });
 
 // export const { addHabit, toggleHabit, removeHabit } = habitSlice.actions;
+export const { updateHabitStreaks } = habitSlice.actions;
 export default habitSlice.reducer;

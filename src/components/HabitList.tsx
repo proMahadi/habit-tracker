@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/Button";
 import { FaCheckCircle } from "react-icons/fa";
 import { TiDelete } from "react-icons/ti";
-import { fetchHabits, Habit,  removeHabitFromSupabase, toggleHabitCompletionInSupabase } from "@/redux/app/habit/habitSlice";
+import { fetchHabits, Habit,  removeHabitFromSupabase, toggleHabitCompletionInSupabase, updateHabitStreaks } from "@/redux/app/habit/habitSlice";
 // import { fetchHabits, Habit, removeHabit,  toggleHabit } from "@/redux/app/habit/habitSlice";
 import { Progress } from "./ui/Progress";
 import { useEffect } from "react";
@@ -15,26 +15,78 @@ const HabitList: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  // const getStreak = (habit: Habit) => {
+  //   let streak = 0;
+  //   const currentDate = new Date();
+
+  //   while (true) {
+  //     const dateString = currentDate.toISOString().split("T")[0];
+
+  //     if (habit.completedDates.includes(dateString)) {
+  //       streak++;
+  //       currentDate.setDate(currentDate.getDate() - 1);
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  //   return streak;
+  // };
+
   const getStreak = (habit: Habit) => {
     let streak = 0;
-    const currentDate = new Date();
-
-    while (true) {
-      const dateString = currentDate.toISOString().split("T")[0];
-
-      if (habit.completedDates.includes(dateString)) {
-        streak++;
-        currentDate.setDate(currentDate.getDate() - 1);
+    // const currentDate = new Date();
+    const completedDates = habit.completedDates.map(date => new Date(date));
+  
+    // Sort completed dates in descending order
+    completedDates.sort((a, b) => b.getTime() - a.getTime());
+  
+    let previousDate = null;
+  
+    for (const date of completedDates) {
+      if (previousDate === null) {
+        streak = 1; // Start streak
       } else {
-        break;
+        const difference = (previousDate.getTime() - date.getTime()) / (1000 * 3600 * 24);
+        if (difference === 1) {
+          streak++; // Increment streak if consecutive day
+        } else {
+          break; // Break streak if gap is more than 1 day
+        }
       }
+      previousDate = date;
     }
+  
     return streak;
   };
 
+  const updateStreaksDaily = () => {
+    const today = new Date().toISOString().split("T")[0];
+  
+    // Loop through all habits and check if they have a streak
+    habits.forEach((habit) => {
+      const completedDates = habit.completedDates;
+      const lastCompletedDate = completedDates[completedDates.length - 1];
+  
+      // If the habit was not completed today, reset the streak
+      if (lastCompletedDate !== today) {
+        // Reset streak if no completion today
+        habit.completedDates = []; 
+      }
+    });
+  
+    // Update Supabase with new streaks
+    dispatch(updateHabitStreaks(habits)); // You'd need to implement an action to update habits
+  };
+  
+
+  // useEffect(() => {
+  //   // Fetch habits from Supabase when the app loads
+  //   dispatch(fetchHabits());
+  // }, [dispatch]);
+
   useEffect(() => {
-    // Fetch habits from Supabase when the app loads
     dispatch(fetchHabits());
+    updateStreaksDaily(); // Reset streaks if necessary
   }, [dispatch]);
 
   return (
