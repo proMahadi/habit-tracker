@@ -154,7 +154,7 @@ export const toggleHabitCompletionInSupabase = createAsyncThunk(
 
     // If the streak is broken, reset the streak count
     if (!completedDates.includes(now)) {
-      completedDates.length = 0; // Reset completed dates if the habit was not completed today
+      completedDates.length = 1; // Reset completed dates if the habit was not completed today
     }
 
     // Update the habit in Supabase
